@@ -1,0 +1,14 @@
+# Build de l'app
+FROM node:20 AS build
+
+WORKDIR /app
+COPY ../projet_devops_frontend/package*.json ./
+RUN npm install
+COPY ../projet_devops_frontend/ ./
+RUN npm run build
+
+# Serveur Nginx
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
