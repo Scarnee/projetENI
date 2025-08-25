@@ -1,13 +1,13 @@
 variable "rg_name" {
-  default = "rg-projet"
+  default = "rg-projet-eni"
 }
 
 variable "location" {
-  default = "westeurope"
+  default = "francecentral"
 }
 
 variable "acr_name" {
-  default = "projetacr123"
+  default = "projetacreni"
 }
 
 variable "aks_name" {
