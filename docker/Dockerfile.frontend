@@ -7,7 +7,7 @@ COPY projet_devops_frontend/package*.json ./
 RUN npm install
 
 # Copier tout le code du frontend
-COPY projet_devops_frontend/ ./
+COPY projet_devops_frontend/. ./
 RUN npm run build
 
 # Étape finale nginx
