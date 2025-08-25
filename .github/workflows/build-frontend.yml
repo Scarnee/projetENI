@@ -23,7 +23,7 @@ jobs:
 
             - name: Build frontend image
               run: |
-                  docker build -f projet_devops_frontend/Dockerfile.frontend -t ${{ secrets.ACR_LOGIN_SERVER }}/frontend:latest projet_devops_frontend/
+                  docker build -f docker/Dockerfile.frontend -t ${{ secrets.ACR_LOGIN_SERVER }}/frontend:latest .
 
             - name: Push frontend image
               run: docker push ${{ secrets.ACR_LOGIN_SERVER }}/frontend:latest

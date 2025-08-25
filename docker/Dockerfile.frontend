@@ -1,0 +1,15 @@
+# Étape build
+FROM node:20 AS build
+WORKDIR /app
+
+# Copier uniquement les fichiers nécessaires pour installer les dépendances
+COPY projet_devops_frontend/package*.json ./
+RUN npm install
+
+# Copier tout le code du frontend
+COPY projet_devops_frontend/ ./
+RUN npm run build
+
+# Étape finale nginx
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
