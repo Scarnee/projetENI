@@ -1,6 +1,7 @@
 name: Build & Push Frontend
 
 on:
+    workflow_dispatch:
     push:
         paths:
             - "projet_devops_frontend/**"
