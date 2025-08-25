@@ -1,0 +1,28 @@
+name: Build & Push Backend
+
+on:
+    push:
+        paths:
+            - "projet_devops_backend/**"
+            - "dockerfiles/Dockerfile.backend"
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Login to ACR
+              uses: azure/docker-login@v1
+              with:
+                  login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+                  username: ${{ secrets.ACR_USERNAME }}
+                  password: ${{ secrets.ACR_PASSWORD }}
+
+            - name: Build backend image
+              run: |
+                  docker build -f dockerfiles/Dockerfile.backend -t ${{ secrets.ACR_LOGIN_SERVER }}/backend:latest backend/
+
+            - name: Push backend image
+              run: docker push ${{ secrets.ACR_LOGIN_SERVER }}/backend:latest
