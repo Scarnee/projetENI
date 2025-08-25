@@ -1,10 +1,10 @@
 FROM node:20 AS build
 WORKDIR /app
 
-COPY package*.json ./
+COPY projet_devops_frontend/package*.json ./
 RUN npm install
 
-COPY . ./
+COPY projet_devops_frontend/ ./
 RUN npm run build
 
 FROM nginx:alpine
