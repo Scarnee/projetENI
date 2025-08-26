@@ -1,13 +1,12 @@
-FROM node:20
-
+FROM node:18 AS build
 WORKDIR /app
 
-# Copie les fichiers package.json depuis le dossier backend
-COPY ../projet_devops_backend/package*.json ./
-RUN npm install
+# Installer outils de build
+RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
 
-# Copie tout le code backend
-COPY ../projet_devops_backend/ ./
+COPY package*.json ./
+RUN npm install --verbose
 
-EXPOSE 3000
-CMD ["npm", "start"]
+COPY . ./
+RUN npm run build
+
