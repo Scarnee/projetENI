@@ -2,10 +2,10 @@ name: Build & Push Frontend
 
 on:
     workflow_dispatch:
-    push:
-        paths:
-            - "projet_devops_frontend/**"
-            - "docker/Dockerfile.frontend"
+    #push:
+    #paths:
+    #- "projet_devops_frontend/**"
+    #- "docker/Dockerfile.frontend"
 
 jobs:
     build:
@@ -25,7 +25,7 @@ jobs:
 
             - name: Build frontend image
               run: |
-                  docker build -f docker/Dockerfile.frontend -t ${{ secrets.ACR_LOGIN_SERVER }}/frontend:latest .
+                  docker build -f docker/Dockerfile.frontend -t ${{ secrets.ACR_LOGIN_SERVER }}/frontend:latest ./projet_devops_frontend
 
             - name: Push frontend image
               run: docker push ${{ secrets.ACR_LOGIN_SERVER }}/frontend:latest
