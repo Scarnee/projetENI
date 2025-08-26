@@ -5,14 +5,16 @@ on:
     push:
         paths:
             - "projet_devops_frontend/**"
-            - "dockerfiles/Dockerfile.frontend"
+            - "docker/Dockerfile.frontend"
 
 jobs:
     build:
+        name: Build
         runs-on: ubuntu-latest
 
         steps:
-            - uses: actions/checkout@v3
+            - name: Checkout Github Action
+              uses: actions/checkout@v3
 
             - name: Login to ACR
               uses: azure/docker-login@v1
