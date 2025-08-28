@@ -17,7 +17,7 @@ Composants principaux :
 -   **Backend** : Node.js / Express exposant une API REST.
 -   **Base de données** : MySQL (StatefulSet Kubernetes).
 -   **Conteneurisation** : Docker, images stockées sur **Azure Container Registry (ACR)**.
--   **Déploiement** : Kubernetes manifests (Deployments, Services, LoadBalancer, reverse proxy Nginx).
+-   **CI/CD** : GitHub Actions pour build, push et déploiement automatique.
 -   **Nom de domaine** : DNS configuré sur OVH, pointant vers l’IP publique du frontend.
 
 ---
@@ -37,12 +37,13 @@ Composants principaux :
 
 -   Services Angular consomment l’API backend via une URL configurée (`/api/tasks`).
 -   Build Angular généré dans le dossier `dist/` et servi par Nginx.
--   Reverse-proxy Nginx gère les routes Angular pour supporter le router et les requêtes `/api`.
+-   Reverse-proxy Nginx gère les routes Angular et les appels `/api`.
+-   L’image Docker est construite et publiée à chaque commit, et la stratégie `imagePullPolicy: Always` garantit la récupération de la dernière version.
 
 ### Backend Node.js / Express
 
 -   API REST exposant les endpoints `/api/tasks`.
--   CORS activé pour permettre la communication interne via Nginx.
+-   CORS activé pour permettre la communication via Nginx.
 -   Conteneurisé avec Docker et déployé dans AKS.
 
 ### Base de données MySQL
@@ -58,41 +59,50 @@ Composants principaux :
 -   **Frontend** : Deployment + Service LoadBalancer + reverse-proxy Nginx.
 -   **Backend** : Deployment + Service ClusterIP.
 -   **MySQL** : StatefulSet + Service ClusterIP.
--   Les URLs backend pour le frontend passent par Nginx (`/api`) pour éviter les erreurs CORS.
+-   Les URLs backend pour le frontend passent par Nginx (`/api`).
 
 ---
 
 ## 5. Nom de domaine
 
 -   DNS configuré sur OVH.
--   `A record` pour `@` et `www` pointant vers l’IP publique du frontend LoadBalancer.
+-   `A record` pour `@` et `www` pointant vers l’IP publique du LoadBalancer frontend.
 
 ---
 
 ## 6. CI/CD avec GitHub Actions
 
-### Pipelines
+### Pipelines configurés
 
-1. **Frontend Build & Push**
+1. **Frontend Build, Push & Deploy**
 
-    - Build l’image Docker du frontend Angular.
-    - Pousse l’image sur **Azure Container Registry (ACR)**.
-    - Assure que l’image est toujours à jour avec `imagePullPolicy: Always`.
+    - Build de l’image Docker du frontend Angular.
+    - Push de l’image vers **Azure Container Registry (ACR)**.
+    - Mise à jour automatique du déploiement AKS via `kubectl` (connexion avec un `kubeconfig` stocké dans GitHub Secrets).
+    - `imagePullPolicy: Always` pour forcer l’utilisation de la dernière image.
 
-2. **Backend Build & Push**
-    - Build l’image Docker du backend Node.js.
-    - Pousse l’image sur **ACR**.
+2. **Backend Build, Push & Deploy**
 
-> Remarque : Déploiement automatique sur AKS depuis la pipeline nécessite un **service principal Azure** avec droits AKS.  
-> Dans notre configuration, le déploiement des pods se fait manuellement avec `kubectl apply -f <manifest.yaml>`.
+    - Build de l’image Docker du backend Node.js.
+    - Push de l’image vers **ACR**.
+    - Déploiement automatique sur AKS avec `kubectl`.
 
 ---
 
-## 7. Vérifications
+## 7. Secrets GitHub utilisés
 
--   Frontend : accéder via le nom de domaine ou l’IP publique du LoadBalancer.
--   Backend interne : tester avec `kubectl exec` et `curl` depuis un pod frontend.
--   Logs des pods :
+-   `ACR_LOGIN_SERVER` : serveur ACR (`xxx.azurecr.io`)
+-   `ACR_USERNAME` : utilisateur de connexion ACR
+-   `ACR_PASSWORD` : mot de passe ACR
+-   `KUBECONFIG` : contenu du fichier kubeconfig pour accéder au cluster AKS
+
+---
+
+## 8. Vérifications
+
+-   **Frontend** : accéder via le nom de domaine ou l’IP publique du LoadBalancer.
+-   **Backend interne** : tester avec `kubectl exec` + `curl` depuis un pod frontend.
+-   **Logs** :
 
 ```bash
 kubectl logs -n projet-devops-jordane <pod-name>
