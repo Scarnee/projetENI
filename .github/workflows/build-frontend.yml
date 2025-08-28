@@ -66,5 +66,11 @@ jobs:
                   kubectl config get-contexts
                   kubectl cluster-info
 
-            - name: Apply manifests
-              run: kubectl apply -n $NS -f k8s/frontend-deploy.yml
+            #- name: Apply manifests
+            #run: kubectl apply -n $NS -f k8s/frontend-deploy.yml
+
+            - name: Set image & rollout
+              run: |
+                  kubectl -n $NS set image deployment/$DEPLOYMENT \
+                    frontend=$IMAGE:${{ github.sha }}
+                  kubectl -n $NS rollout status deployment/$DEPLOYMENT --timeout=180s
