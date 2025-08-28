@@ -2,12 +2,13 @@ name: Build, Push & Deploy Frontend
 
 on:
     workflow_dispatch:
-    # (Optionnel) déploie automatiquement quand le front change
-    # push:
-    #   paths:
-    #     - "projet_devops_frontend/**"
-    #     - "docker/Dockerfile.frontend"
-    #     - ".github/workflows/frontend-deploy.yml"
+    # déploie automatiquement quand le front change
+    push:
+        paths:
+            - "projet_devops_frontend/**"
+            - "docker/Dockerfile.frontend"
+            - ".github/workflows/build-frontend.yml"
+            - "k8s/frontend-deploy.yml"
 
 jobs:
     build-and-push:
@@ -66,4 +67,4 @@ jobs:
                   kubectl cluster-info
 
             - name: Apply manifests
-              run: kubectl apply -n $NS -f k8s/frontend.yml
+              run: kubectl apply -n $NS -f k8s/frontend-deploy.yml
